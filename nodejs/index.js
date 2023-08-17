@@ -27,10 +27,18 @@ app.use(bodyParser.json()); //this will call the body-parser middleware function
 
 function calculateSum(num){
     var sum=0;
-    for(var i=0;i<=num;i++){
+    for(var i=1;i<=num;i++){
         sum = sum+i;
     }
     return sum;
+}
+
+function calculateMul(num){
+    var mul=1;
+    for(var i=1;i<=num;i++){
+        mul = mul*i;
+    }
+    return mul;
 }
 
 function handleRequest(req, res){
@@ -38,23 +46,29 @@ function handleRequest(req, res){
 }
 
 function handleRequest2(req, res){
-    res.send('this is second route')
+    res.sendFile(__dirname+'/index.html'); // this is a function that sends html file as the response to the client(browser/front-end).
 }
 
-function handleSum(req, res){
+function handleCalculate(req, res){
     // var num = req.query.num; //sending num as query parameter
     //req.query.counter will get the value of num from the url
     // var num = req.headers.num; //sending num as header, this is more secure than sending as query parameter as it is not visible in the url.
 
-     var num = req.body.num;//sending num as body
+    //  var num = req.body.num;//sending num as body
+        var num = req.query.num;
     
     var calculatedSum = calculateSum(num);
-    var answer= `Sum is ${calculatedSum}`;
+    var calculatedMul = calculateMul(num);
+    //this is how sending the body response as json object
+    var answerObj= {
+        sum: calculatedSum,
+        mul: calculatedMul
+    }
     // res.send(answer); //sending the answer as response to the client(browser/front-end)
     if(num>1000000){
         res.status(411).send("number is too big");
     } else{
-        res.status(200).send(answer);
+        res.status(200).send(answerObj);
     }
     // res.status(200); //this will set the status code of the response to 200, which means the request was successful.{we can set any status code, eg: 404, 500, etc. and send the response accordingly}
  }
@@ -72,8 +86,9 @@ function portStarted(){
 //all these request types are called http methods,used to communicate with the server.
 
 app.post('/', handleRequest); // '/' is the route,which is the default route and will call handleRequest function.
-app.get('/hello',handleRequest2);// app.put('/hello', handleRequest2); // '/hello' is the route, which will call handleRequest2 function.
-app.get('/calsum', handleSum); // '/calsum' is the route, which will call handleSum function.
+app.get('/sendhtml',handleRequest2);// app.put('/sendhtml', handleRequest2); // '/sendhtml' is the route, which will call handleRequest2 function.
+app.get('/calculate', handleCalculate); // '/calsum' is the route, which will call handleSum function.
+// app.get('/calmul', handleMul); // '/calmul' is the route, which will call handleMul function.
 
 app.listen(port, portStarted); //this will start the server on port 3000 and call portStarted function.
   
